@@ -61,6 +61,15 @@ def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
     imglist = list()
     for i, bbox in enumerate(bboxes): #对于每个检测框吧。
          coor = np.array(bbox[:4], dtype=np.int32) #检测框的两个对角吧。。
+
+         if gt_classes_index == None:
+            class_index = int(bbox[5]) #class   
+            score = bbox[4] #概率吧
+         else:
+            class_index = gt_classes_index[i]
+            score = 1
+
+         classes_name = classes[class_index]
          temp = image[coor[1]:coor[3],coor[0]:coor[2]]
          imglist.append(temp)
          r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
@@ -71,7 +80,8 @@ def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
          e1 = jiami(x1, r)
          e2 = jiami(x2, r)
          imgcut = np.dstack((e0, e1, e2)) #
-         image[coor[1]:coor[3],coor[0]:coor[2]] = imgcut  #换
+         if classes_name == 'person':
+            image[coor[1]:coor[3],coor[0]:coor[2]] = imgcut  #换
          fig_name = f'result.jpg'
          cv2.imwrite(fig_name, image)
     return image
