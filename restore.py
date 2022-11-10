@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import postprocess as pc
+import jiami
 def predict_cut(model_output,
                 model_hw_shape,
                 origin_image=None,
@@ -49,9 +50,10 @@ def predict_cut(model_output,
     nms_bboxes = pc.nms(bboxes, nms_threshold) ##找到best box
     if dump_image and origin_image is not None:
         print("detected item num: ", len(nms_bboxes))
-        return imgcut(origin_image, nms_bboxes)
+        imgRestore(origin_image, nms_bboxes)
+    return nms_bboxes #返回带有class,坐标等信息的框
 
-def imgcut(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
+def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
     num_classes = len(classes)
     image_h, image_w, channel = image.shape
     fontScale = 0.5
@@ -61,5 +63,19 @@ def imgcut(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
          coor = np.array(bbox[:4], dtype=np.int32) #检测框的两个对角吧。。
          temp = image[coor[1]:coor[3],coor[0]:coor[2]]
          imglist.append(temp)
-    return imglist
-            
+         r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
+         x0 = temp[:, :, 0]
+         x1 = temp[:, :, 1]
+         x2 = temp[:, :, 2]
+         e0 = jiami(x0, r)
+         e1 = jiami(x1, r)
+         e2 = jiami(x2, r)
+         imgcut = np.dstack((e0, e1, e2)) #
+         image[coor[1]:coor[3],coor[0]:coor[2]] = imgcut  #换
+         fig_name = f'result.jpg'
+         cv2.imwrite(fig_name, image)
+    return image
+
+         
+    
+
