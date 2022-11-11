@@ -3,8 +3,7 @@
 import numpy as np
 import cv2
 from postprocess import postprocess
-import jiami
-import restore
+from restore import predict_cut
 
 from hobot_dnn import pyeasy_dnn as dnn
 
@@ -38,23 +37,22 @@ def print_properties(pro):
 
 
 if __name__ == '__main__':
-    #加载模型
-    models = dnn.load('../models/yolov5s_672x672_nv12.bin')
+    models = dnn.load('../models/yolov3_darknet53_416x416_nv12.bin')
     # 打印输入 tensor 的属性
     print_properties(models[0].inputs[0].properties)
     # 打印输出 tensor 的属性
     print(len(models[0].outputs))
     for output in models[0].outputs:
         print_properties(output.properties)
-    #读取图像
+
     img_file = cv2.imread('./kite.jpg')
     h, w = get_hw(models[0].inputs[0].properties)
     des_dim = (w, h)
     resized_data = cv2.resize(img_file, des_dim, interpolation=cv2.INTER_AREA)
-    #格式转换
     nv12_data = bgr2nv12_opencv(resized_data)
-    #模型推理
+
     outputs = models[0].forward(nv12_data)
-    #检测框合成
-    prediction_bbox = restore.predict_cut(outputs, model_hw_shape=(672, 672), origin_image=img_file)
+
+    prediction_bbox = predict_cut(outputs, model_hw_shape=(416, 416), origin_image=img_file)
     print(prediction_bbox)
+  

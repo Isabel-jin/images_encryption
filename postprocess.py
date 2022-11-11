@@ -10,6 +10,8 @@ import numpy as np
 import cv2
 import colorsys
 
+
+
 def postprocess(model_output,
                 model_hw_shape,
                 origin_image=None,
@@ -21,8 +23,8 @@ def postprocess(model_output,
     anchors = np.array([
         1.25, 1.625, 2.0, 3.75, 4.125, 2.875, 1.875, 3.8125, 3.875, 2.8125,
         3.6875, 7.4375, 3.625, 2.8125, 4.875, 6.1875, 11.65625, 10.1875
-    ]).reshape((3, 3, 2)) #转换成三维数组
-    num_anchors = anchors.shape[0] #那么这里应该等于3了
+    ]).reshape((3, 3, 2))
+    num_anchors = anchors.shape[0]
     strides = np.array([8, 16, 32])
     input_shape = (416, 416)
 
@@ -55,10 +57,10 @@ def postprocess(model_output,
     bboxes = postprocess_boxes(pred_bbox, (org_height, org_width),
                                input_shape=(process_height, process_width),
                                score_threshold=score_threshold)
-    nms_bboxes = nms(bboxes, nms_threshold) ##找到best box
+    nms_bboxes = nms(bboxes, nms_threshold)
     if dump_image and origin_image is not None:
         print("detected item num: ", len(nms_bboxes))
-        draw_bboxs(origin_image, nms_bboxes)
+        imgRestore(origin_image, nms_bboxes)
     return nms_bboxes
 
 def get_classes(class_file_name='coco_classes.names'):
@@ -84,26 +86,26 @@ def draw_bboxs(image, bboxes, gt_classes_index=None, classes=get_classes()):
     fontScale = 0.5
     bbox_thick = int(0.6 * (image_h + image_w) / 600)
 
-    for i, bbox in enumerate(bboxes): #对于每个检测框吧。
-        coor = np.array(bbox[:4], dtype=np.int32) #检测框的两个对角吧。。
+    for i, bbox in enumerate(bboxes):
+        coor = np.array(bbox[:4], dtype=np.int32)
 
         if gt_classes_index == None:
-            class_index = int(bbox[5]) #class   
-            score = bbox[4] #概率吧
+            class_index = int(bbox[5])
+            score = bbox[4]
         else:
             class_index = gt_classes_index[i]
             score = 1
 
         bbox_color = colors[class_index]
         c1, c2 = (coor[0], coor[1]), (coor[2], coor[3])
-        cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)  #框图的核心代码
+        cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
         classes_name = classes[class_index]
-        bbox_mess = '%s: %.2f' % (classes_name, score) #文字
+        bbox_mess = '%s: %.2f' % (classes_name, score)
         t_size = cv2.getTextSize(bbox_mess,
                                  0,
                                  fontScale,
-                                 thickness=bbox_thick // 2)[0]  #文字尺寸
-        cv2.rectangle(image, c1, (c1[0] + t_size[0], c1[1] - t_size[1] - 3), #框文字的框，关系不大
+                                 thickness=bbox_thick // 2)[0]
+        cv2.rectangle(image, c1, (c1[0] + t_size[0], c1[1] - t_size[1] - 3),
                       bbox_color, -1)
         cv2.putText(image,
                     bbox_mess, (c1[0], c1[1] - 2),
@@ -265,3 +267,4 @@ def yolo_decoder(conv_output, num_anchors, num_classes, anchors, stride):
 
     decode_output = np.concatenate([pred_xywh, pred_conf, pred_prob], axis=-1)
     return decode_output
+

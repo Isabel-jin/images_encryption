@@ -1,7 +1,10 @@
 import numpy as np
 import cv2
 import postprocess as pc
-import jiami
+from jiami import jiami
+import colorsys
+
+
 def predict_cut(model_output,
                 model_hw_shape,
                 origin_image=None,
@@ -59,31 +62,38 @@ def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
     fontScale = 0.5
     bbox_thick = int(0.6 * (image_h + image_w) / 600)
     imglist = list()
+    hsv_tuples = [(1.0 * x / num_classes, 1., 1.) for x in range(num_classes)]
+    colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
+    colors = list(
+        map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)),
+            colors))
+
+    fontScale = 0.5
+    bbox_thick = int(0.6 * (image_h + image_w) / 600)
     for i, bbox in enumerate(bboxes): #对于每个检测框吧。
          coor = np.array(bbox[:4], dtype=np.int32) #检测框的两个对角吧。。
-
          if gt_classes_index == None:
             class_index = int(bbox[5]) #class   
             score = bbox[4] #概率吧
          else:
             class_index = gt_classes_index[i]
             score = 1
-
+         bbox_color = colors[class_index]
          classes_name = classes[class_index]
-         temp = image[coor[1]:coor[3],coor[0]:coor[2]]
-         imglist.append(temp)
-         r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
-         x0 = temp[:, :, 0]
-         x1 = temp[:, :, 1]
-         x2 = temp[:, :, 2]
-         e0 = jiami(x0, r)
-         e1 = jiami(x1, r)
-         e2 = jiami(x2, r)
-         imgcut = np.dstack((e0, e1, e2)) #
-         if classes_name == 'person':
+         if classes_name =='person':
+            temp = image[coor[1]:coor[3],coor[0]:coor[2]]
+            imglist.append(temp)
+            r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
+            x0 = temp[:, :, 0]
+            x1 = temp[:, :, 1]
+            x2 = temp[:, :, 2]
+            e0 = jiami(x0, r)
+            e1 = jiami(x1, r)
+            e2 = jiami(x2, r)
+            imgcut = np.dstack((e0, e1, e2)) #
             image[coor[1]:coor[3],coor[0]:coor[2]] = imgcut  #换
-         fig_name = f'result.jpg'
-         cv2.imwrite(fig_name, image)
+            fig_name = f'result.jpg'
+            cv2.imwrite(fig_name, image)
     return image
 
          
