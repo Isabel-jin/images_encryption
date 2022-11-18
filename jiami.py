@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def jiami(x,data):
+
+def jiami(x, data):
     # m0 m1 m2 为三个混沌序列，用密钥赋初值
     height, width = x.shape
     size = height * width
@@ -17,8 +18,8 @@ def jiami(x,data):
     # u0 u1 u2 为三个混沌序列参数，用密钥赋值
     u0 = data[3]
 
-    for i in range(1,size):
-        m0[i] =  u0 * m0[i-1] * (1 - m0[i-1])
+    for i in range(1, size):
+        m0[i] = u0 * m0[i-1] * (1 - m0[i-1])
     print(m0)
     m0 = 255 * m0 % 256
     m0 = m0.astype(np.int32)
@@ -46,10 +47,10 @@ def jiami(x,data):
     e = np.zeros((height, width),np.int32)
     for i in range(height):
         for j in range(width):
-           e[i,j] = m0[n] ^ m1[n]
-           e[i,j] = e[i,j]^m2[n]
-           e[i,j] = e[i,j] + x[i,j]
-           e[i,j] = e[i,j] % 256
+           e[i, j] = m0[n] ^ m1[n]
+           e[i, j] = e[i, j] ^ m2[n]
+           e[i, j] = e[i, j] + x[i, j]
+           e[i, j] = e[i, j] % 256
            n = n+1
     e = e.astype(np.uint8)
     plt.figure(figsize=(8, 8))
