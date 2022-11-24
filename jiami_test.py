@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 def jiami(x,data):
     # m0 m1 m2 为三个混沌序列，用密钥赋初值
     height, width = x.shape
