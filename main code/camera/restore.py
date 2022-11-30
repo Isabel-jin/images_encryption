@@ -20,7 +20,7 @@ def predict_cut(model_output,
     ]).reshape((3, 3, 2)) #转换成三维数组
     num_anchors = anchors.shape[0] #那么这里应该等于3了
     strides = np.array([8, 16, 32])
-    input_shape = (416, 416)
+    input_shape = (512, 512)
 
     if origin_image is not None:
         org_height, org_width = origin_image.shape[0:2]
@@ -54,8 +54,9 @@ def predict_cut(model_output,
     nms_bboxes = pc.nms(bboxes, nms_threshold) ##找到best box
     if dump_image and origin_image is not None:
         print("detected item num: ", len(nms_bboxes))
-        imgRestore(origin_image, nms_bboxes)
-    return nms_bboxes #返回带有class,坐标等信息的框
+        new_img=imgRestore(origin_image, nms_bboxes)
+    #return nms_bboxes #返回带有class,坐标等信息的框
+    return new_img
 
 def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
     Yinxielist = np.zeros(len(bbox)+1)#隐写的数据
@@ -100,7 +101,7 @@ def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
             Yinxielist[4*i+2] = coor[1]
             Yinxielist[4*i+3] = coor[2]
             Yinxielist[4*i+4] = coor[3]
-            fig_name = f'result.jpg'
+            fig_name = f'result_jiami.jpg'
             cv2.imwrite(fig_name, image)
     newimg = yinxie(image,Yinxielist)
     return newimg
