@@ -2,6 +2,7 @@ import numpy as np
 
 def jiemi(x,data):
     # m0 m1 m2 为三个混沌序列，用密钥赋初值
+    print(x.shape)
     height, width = x.shape
     size = height * width
 

@@ -18,7 +18,7 @@ def yinxie(img, arr):
     for i in range(lenner):
         r[i] = float(arr[i])
         num.append(format(arr[i], 'b').zfill(16))
-        print(num[i])
+        #print(num[i])
 
     # 对原图像的前16*len个像素的R通道进行隐写
     # X0为图像的R通道转换成一维

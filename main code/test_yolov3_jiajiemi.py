@@ -56,6 +56,6 @@ if __name__ == '__main__':
     jiami_img = predict_cut(outputs, model_hw_shape=(416, 416), origin_image=img_file)
     r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
     jiemi_img = img_jiemi(jiami_img,r)
-    cv2.imwrite("result_jiemi", jiemi_img)
+    cv2.imwrite("result_jiemi.jpg", jiemi_img)
 
   

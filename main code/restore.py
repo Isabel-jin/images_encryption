@@ -59,9 +59,9 @@ def predict_cut(model_output,
     return new_img
 
 def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
-    Yinxielist = np.zeros(len(bbox)+1)#隐写的数据
-    Yinxielist[0] = len(bbox)#坐标框数量
-    
+    Yinxielist = list() #隐写数据，一会儿转np
+    Yinxielist.append(0) #计数初始化为0
+
     num_classes = len(classes)
     image_h, image_w, channel = image.shape
     fontScale = 0.5
@@ -97,12 +97,19 @@ def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
             e2 = jiami(x2, r)
             imgcut = np.dstack((e0, e1, e2)) #
             image[coor[1]:coor[3],coor[0]:coor[2]] = imgcut  #换
-            Yinxielist[4*i+1] = coor[0]
-            Yinxielist[4*i+2] = coor[1]
-            Yinxielist[4*i+3] = coor[2]
-            Yinxielist[4*i+4] = coor[3]
+            Yinxielist.append(coor[0])  
+            Yinxielist.append(coor[1])
+            Yinxielist.append(coor[2])
+            Yinxielist.append(coor[3])
+
+            #Yinxielist[4*i+1] = coor[0]
+            #Yinxielist[4*i+2] = coor[1]
+            #Yinxielist[4*i+3] = coor[2]
+            #Yinxielist[4*i+4] = coor[3]
             fig_name = f'result_jiami.jpg'
             cv2.imwrite(fig_name, image)
+    Yinxielist[0] = int((len(Yinxielist) -1)/4)
+    print("yinxiedata",Yinxielist)
     newimg = yinxie(image,Yinxielist)
     return newimg
 
