@@ -17,7 +17,7 @@ def jiemi(x,data):
 
     for i in range(1,size):
         m0[i] =  u0 * m0[i-1] * (1 - m0[i-1])
-    print(m0)
+    #print(m0)
     m0 = 255 * m0 % 256
     m0 = m0.astype(np.int32)
 

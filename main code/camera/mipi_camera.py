@@ -49,7 +49,6 @@ def get_classes():
         "scissors", "teddy bear", "hair drier", "toothbrush"
     ])
 
-
 def get_hw(pro):
     if pro.layout == "NCHW":
         return pro.shape[2], pro.shape[3]
@@ -128,7 +127,7 @@ def decode(outputs, score_threshold, origin_shape, input_size=512):
     return np.concatenate(bboxes)
 
 
-def nms(bboxes, iou_threshold, sigma=0.3, method='nms'):
+def nms(bboxes, iou_threshold, sigma=0.3, method='nms'): #非极大值抑制
     def bboxes_iou(boxes1, boxes2):
         boxes1 = np.array(boxes1)
         boxes2 = np.array(boxes2)
@@ -354,7 +353,9 @@ if __name__ == '__main__':
         infer_finish_time = time()
         
         bgr_img=cv2.cvtColor(bgr_img,cv2.COLOR_YUV2GRAY_NV12)#将nv12转换为bgr格式使得能加解密
-
+        jiami_img = predict_cut(outputs, model_hw_shape=(512, 512), origin_image=bgr_img)
+        r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
+        jiemi_img = img_jiemi(jiami_img,r)
         output_array = []
         for item in outputs:
             output_array.append(item.buffer)

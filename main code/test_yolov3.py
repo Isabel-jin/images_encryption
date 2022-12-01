@@ -2,8 +2,7 @@
 
 import numpy as np
 import cv2
-from restore import predict_cut
-from img_jiemi import img_jiemi
+from postprocess import postprocess
 
 from hobot_dnn import pyeasy_dnn as dnn
 
@@ -53,9 +52,5 @@ if __name__ == '__main__':
 
     outputs = models[0].forward(nv12_data)
 
-    jiami_img = predict_cut(outputs, model_hw_shape=(416, 416), origin_image=img_file)
-    r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥
-    jiemi_img = img_jiemi(jiami_img,r)
-    cv2.imwrite("result_jiemi.jpg", jiemi_img)
-
-  
+    prediction_bbox = postprocess(outputs, model_hw_shape=(416, 416), origin_image=img_file)
+    print(prediction_bbox)

@@ -85,7 +85,7 @@ def imgRestore(image, bboxes, gt_classes_index=None, classes=pc.get_classes()):
             score = 1
          bbox_color = colors[class_index]
          classes_name = classes[class_index]
-         if classes_name =='person':
+         if classes_name =='sports ball':
             temp = image[coor[1]:coor[3],coor[0]:coor[2]]
             imglist.append(temp)
             r=np.array([0.343, 0.432, 0.63 ,3.769 ,3.82, 3.8, 0.1 ,1])#密钥

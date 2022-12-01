@@ -60,7 +60,7 @@ def postprocess(model_output,
     nms_bboxes = nms(bboxes, nms_threshold)
     if dump_image and origin_image is not None:
         print("detected item num: ", len(nms_bboxes))
-        imgRestore(origin_image, nms_bboxes)
+        draw_bboxs(origin_image, nms_bboxes)
     return nms_bboxes
 
 def get_classes(class_file_name='coco_classes.names'):
